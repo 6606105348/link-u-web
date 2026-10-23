@@ -1,0 +1,862 @@
+﻿<!DOCTYPE html>
+<html lang="th"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link U - เนเธเธฅเธ•เธเธญเธฃเนเธกเธเธฒเธเนเธฅเธฐเธ—เธฑเธเธฉเธฐ เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน (Campus Job Matching)</title>
+    <meta name="description" content="Link U เนเธเธฅเธ•เธเธญเธฃเนเธกเธเธฅเธฒเธเน€เธเธทเนเธญเธกเนเธขเธเธเธฒเธเธเธฃเธดเธเธเธฑเธเธ—เธฑเธเธฉเธฐเธเธฃเธดเธเธ เธฒเธขเนเธเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน เธเนเธเธซเธฒเธเธฒเธ เธเธฃเธฐเธเธฒเธจเธเธฒเธ เธเธฑเธเธเธนเนเธญเธฑเธ•เนเธเธกเธฑเธ•เธดเธ”เนเธงเธข AI Portfolio เนเธฅเธฐเนเธเธ—เน€เธฃเธตเธขเธฅเนเธ—เธกเน">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+
+    <!-- Google Fonts: Prompt & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Prompt:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+
+    <!-- Supabase JS Client v2 from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- App Stylesheet (Blue & White theme inspired by intern.th) -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <!-- Brand Logo & Name -->
+            <a href="javascript:void(0)" class="brand" onclick="window.linkUApp.navigateTo('jobs')">
+                <img src="assets/logo.png" alt="Link U Maejo University Emblem" class="brand-logo" id="mainBrandLogo">
+                <div class="brand-text">
+                    <div class="brand-title">Link <span class="u">U</span></div>
+                    <span class="brand-subtitle">MAEJO UNIVERSITY โ€ข DIGITAL TALENT</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav>
+                <ul class="nav-menu" id="mainNavMenu">
+                    <li>
+                        <a href="javascript:void(0)" class="nav-link active" data-nav-target="jobs">
+                            ๐” เธเนเธเธซเธฒเธเธฒเธ
+                        </a>
+                    </li>
+                    <li class="nav-student-only" style="display: flex;">
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="matching">
+                            ๐ฏ AI เนเธกเธ•เธเนเธ—เธฑเธเธฉเธฐ
+                        </a>
+                    </li>
+                    <li class="nav-student-only" style="display: flex;">
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="my-applications">
+                            ๐“ เธเธฒเธเธ—เธตเนเธเธฑเธเธชเธกเธฑเธเธฃ
+                        </a>
+                    </li>
+                    <li class="nav-instructor-only" style="display:none;">
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="manage-jobs">
+                            ๐“ เธเธฑเธ”เธเธฒเธฃเธเธฒเธเธ—เธตเนเธเธฃเธฐเธเธฒเธจ
+                        </a>
+                    </li>
+                    <li class="nav-instructor-only" style="display:none;">
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="manage-applicants">
+                            ๐‘ฅ เธเธนเนเธชเธกเธฑเธเธฃ &amp; AI Ranking
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="chat">
+                            ๐’ฌ เนเธเธ—เน€เธฃเธตเธขเธฅเนเธ—เธกเน
+                        </a>
+                    </li>
+                    <li class="nav-instructor-only" style="display:none;">
+                        <a href="javascript:void(0)" class="nav-link" data-nav-target="dashboard">
+                            ๐“ เนเธ”เธเธเธญเธฃเนเธ”
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Header Right Actions -->
+            <div class="header-actions">
+                <!-- Supabase Cloud Connection Status Badge -->
+                <div class="supabase-badge" id="supabaseStatusBadge" title="เธขเธฑเธเนเธกเนเนเธ”เนเธ•เธฑเนเธเธเนเธฒ Supabase URL เธซเธฃเธทเธญ Anon Key (เนเธเนเธเธฒเธเนเธซเธกเธ” Local Storage)"><span class="dot"></span> <span>โ๏ธ เธ•เธฑเนเธเธเนเธฒ Supabase</span></div>
+
+                <!-- Post Job Action Button (Visible for Instructors) -->
+                <button class="btn btn-primary btn-sm" id="postJobHeaderBtn" style="display:none;">
+                    <span>โ• เธเธฃเธฐเธเธฒเธจเธเธฒเธเนเธซเธกเน</span>
+                </button>
+
+                <!-- Quick Role Switcher Button -->
+                <button class="btn btn-outline btn-sm" id="switchRoleBtn" title="เธชเธฅเธฑเธเธเธ—เธเธฒเธ—เธฃเธฐเธซเธงเนเธฒเธเธญเธฒเธเธฒเธฃเธขเนเนเธฅเธฐเธเธฑเธเธจเธถเธเธฉเธฒเน€เธเธทเนเธญเธ—เธ”เธชเธญเธเธฃเธฐเธเธ">
+                    ๐” เธชเธฅเธฑเธเธเธ—เธเธฒเธ—
+                </button>
+
+                <!-- Login / Register Button -->
+                <button class="btn btn-outline btn-sm" id="authModalBtn" onclick="window.linkUApp.openAuthModal()" title="เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธเธซเธฃเธทเธญเธชเธกเธฑเธเธฃเธชเธกเธฒเธเธดเธเนเธซเธกเน">
+                    ๐”‘ เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธ
+                </button>
+
+                <!-- User Profile Nav Button (Clicks directly to User Profile page) -->
+                <div class="user-menu-btn" id="userProfileNavBtn" title="เธเธฅเธดเธเน€เธเธทเนเธญเธ”เธนเนเธเธฃเนเธเธฅเนเนเธฅเธฐ Portfolio เธเธญเธเธเธธเธ“">
+                    <div class="user-avatar" id="userAvatarDisplay"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&amp;fit=crop&amp;w=150&amp;q=80" alt="เธ.เธช.เธเธงเธฑเธฅเธฃเธฑเธเธ•เน เธงเธเธฉเนเธเธณ" style="width:100%; height:100%; border-radius:50%; object-fit:cover;"></div>
+                    <div class="user-info-text">
+                        <span class="user-name" id="userNameDisplay">เธ.เธช.เธเธงเธฑเธฅเธฃเธฑเธเธ•เน เธงเธเธฉเนเธเธณ</span>
+                        <span class="user-role-badge" id="userRoleDisplay">เธเธฑเธเธจเธถเธเธฉเธฒ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Search & Discovery Section (Inspired by intern.th) -->
+    <section class="hero-section" id="heroSearchSection" style="display: block;">
+        <div class="container">
+            <div class="hero-badge">
+                ๐“ เนเธเธฅเธ•เธเธญเธฃเนเธกเธเธฒเธเนเธฅเธฐเธ—เธฑเธเธฉเธฐ เธชเธณเธซเธฃเธฑเธเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน
+            </div>
+            <h1 class="hero-title">
+                เน€เธเธทเนเธญเธกเนเธขเธ <span class="highlight">"เธเธฒเธเธเธฃเธดเธ"</span> เธเธฑเธ <span class="highlight">"เธ—เธฑเธเธฉเธฐเธเธฃเธดเธ"</span>
+            </h1>
+            <p class="hero-subtitle">
+                เธจเธนเธเธขเนเธเธฅเธฒเธเธเนเธเธซเธฒเนเธเธฃเธเธเธฒเธฃ เธเธนเนเธเนเธงเธขเธงเธดเธเธฑเธข เธเธนเนเธเนเธงเธขเธชเธญเธ เนเธฅเธฐเธเธฒเธเธเธฃเธดเธเธฒเธฃเธงเธดเธเธฒเธเธฒเธฃ 
+                เธเธฃเนเธญเธกเธฃเธฐเธเธ AI Matching เธเธฑเธเธเธนเนเธ—เธฑเธเธฉเธฐเธเธฑเธเธจเธถเธเธฉเธฒเธเธฑเธเธเธฒเธเธญเธขเนเธฒเธเนเธกเนเธเธขเธณ
+            </p>
+
+            <!-- Search Bar Wrapper -->
+            <div class="search-box-wrapper">
+                <div class="search-input-group">
+                    <span class="search-icon">๐”</span>
+                    <input type="text" id="jobSearchInput" class="search-input" placeholder="เธเนเธเธซเธฒเธเธทเนเธญเธเธฒเธ, เธ—เธฑเธเธฉเธฐเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃ, เธซเธฃเธทเธญเธเธณเธชเธณเธเธฑเธ...">
+                </div>
+
+                <select id="jobDeptSelect" class="search-select">
+                    <option value="all">เธ—เธธเธเธเธ“เธฐ / เธ—เธธเธเธซเธเนเธงเธขเธเธฒเธ</option>
+                    <option value="เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ">เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ</option>
+                    <option value="เธชเธฒเธเธฒเธงเธดเธเธฒเธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ">เธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ</option>
+                    <option value="เธเธ“เธฐเธงเธดเธ—เธขเธฒเธจเธฒเธชเธ•เธฃเน">เธเธ“เธฐเธงเธดเธ—เธขเธฒเธจเธฒเธชเธ•เธฃเน</option>
+                    <option value="เธเธ“เธฐเธเธฅเธดเธ•เธเธฃเธฃเธกเธเธฒเธฃเน€เธเธฉเธ•เธฃ">เธเธ“เธฐเธเธฅเธดเธ•เธเธฃเธฃเธกเธเธฒเธฃเน€เธเธฉเธ•เธฃ</option>
+                    <option value="เธชเธณเธเธฑเธเธงเธดเธเธฑเธขเนเธฅเธฐเธชเนเธเน€เธชเธฃเธดเธกเธงเธดเธเธฒเธเธฒเธฃ">เธชเธณเธเธฑเธเธงเธดเธเธฑเธขเนเธฅเธฐเธชเนเธเน€เธชเธฃเธดเธก</option>
+                    <option value="เธเธญเธเธเธฑเธ’เธเธฒเธเธฑเธเธจเธถเธเธฉเธฒ">เธเธญเธเธเธฑเธ’เธเธฒเธเธฑเธเธจเธถเธเธฉเธฒ</option>
+                </select>
+
+                <button class="btn-search" onclick="window.linkUApp.renderJobsFeed()">
+                    <span>เธเนเธเธซเธฒเธเธฒเธ</span>
+                </button>
+            </div>
+
+            <!-- Quick Filter Tags -->
+            <div class="quick-tags">
+                <span class="quick-tags-label">เธ—เธฑเธเธฉเธฐเธขเธญเธ”เธเธดเธขเธก:</span>
+                <span class="tag-chip" data-skill="Graphic Design">Graphic Design</span>
+                <span class="tag-chip" data-skill="Canva">Canva</span>
+                <span class="tag-chip" data-skill="React">React / Web</span>
+                <span class="tag-chip" data-skill="เธ•เธฑเธ”เธ•เนเธญ">เธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญ</span>
+                <span class="tag-chip" data-skill="เธ–เนเธฒเธขเธ เธฒเธ">เธ–เนเธฒเธขเธ เธฒเธ</span>
+                <span class="tag-chip" data-skill="Python">Python / Data</span>
+                <span class="tag-chip" data-skill="เธเธฃเธฐเธชเธฒเธเธเธฒเธ">เธเธฃเธฐเธชเธฒเธเธเธฒเธ</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Dynamic View Container -->
+    <main id="viewContainer" class="container main-content">
+        <div class="section-header">
+            <div>
+                <h1 class="section-title">
+                    <span>๐“ เธเธฃเธฐเธเธฒเธจเธเธฒเธเนเธฅเธฐเนเธเธฃเธเธเธฒเธฃเธฅเนเธฒเธชเธธเธ”</span>
+                    <span class="section-counter">(4 เธ•เธณเนเธซเธเนเธ)</span>
+                </h1>
+                <p style="font-size:0.88rem; color:var(--text-secondary); margin-top:4px;">
+                    เธเธฒเธเธ เธฒเธขเนเธเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเนเธชเธณเธซเธฃเธฑเธเธเธฑเธเธจเธถเธเธฉเธฒเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเธเธถเธเธเธฃเธฐเธชเธเธเธฒเธฃเธ“เนเธเธฃเธดเธ
+                </p>
+            </div>
+            
+        </div>
+
+        
+            <div class="jobs-grid">
+                
+        <div class="job-card ">
+            <div>
+                <div class="job-card-header">
+                    <span class="job-dept-badge" title="เธเธ“เธฐเธงเธดเธ—เธขเธฒเธจเธฒเธชเธ•เธฃเน">๐ข เธเธ“เธฐเธงเธดเธ—เธขเธฒเธจเธฒเธชเธ•เธฃเน</span>
+                    <span class="job-status-pill open">
+                        ๐ข เน€เธเธดเธ”เธฃเธฑเธเธชเธกเธฑเธเธฃ
+                    </span>
+                </div>
+
+                <h3 class="job-title">เธเธนเนเธเนเธงเธขเธงเธดเธเธฑเธขเธ”เนเธฒเธเธเธฒเธฃเธงเธดเน€เธเธฃเธฒเธฐเธซเนเธเนเธญเธกเธนเธฅเนเธฅเธฐ AI เธชเธณเธซเธฃเธฑเธเธเธฒเธฃเน€เธเธฉเธ•เธฃเนเธกเนเธเธขเธณ</h3>
+                
+                <div class="job-instructor">
+                    <span class="inst-avatar">เธ</span>
+                    <span>เธเธนเนเธเธฃเธฐเธเธฒเธจ: <strong>เธเธจ.เธ”เธฃ.เธชเธกเธเธฒเธข เธเธฑเธเธเธฒเธ”เธต</strong></span>
+                </div>
+
+                <div class="job-meta-row">
+                    <span class="job-meta-item stipend">๐’ฐ 450 เธเธฒเธ—/เธงเธฑเธ</span>
+                    <span class="job-meta-item">๐‘ฅ เธฃเธฑเธ 2 เธญเธฑเธ•เธฃเธฒ</span>
+                    <span class="job-meta-item">โฑ๏ธ 3 เน€เธ”เธทเธญเธ</span>
+                </div>
+
+                <p class="job-description-snippet">เธเนเธงเธขเธเธฑเธ”เธเธฒเธฃเธเธธเธ”เธเนเธญเธกเธนเธฅ (Data Cleaning) เนเธฅเธฐเธ—เธ”เธชเธญเธเนเธกเน€เธ”เธฅ Machine Learning เนเธเธเธฒเธฃเธเธขเธฒเธเธฃเธ“เนเธเธฅเธเธฅเธดเธ•เธเธทเธเน€เธเธฉเธ•เธฃเธเธญเธเธจเธนเธเธขเนเธงเธดเธเธฑเธข เน€เธซเธกเธฒเธฐเธชเธณเธซเธฃเธฑเธเธเธฑเธเธจเธถเธเธฉเธฒเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃเธ•เนเธญเธขเธญเธ”เธเธฅเธเธฒเธเธงเธดเธเธฒเธเธฒเธฃเนเธฅเธฐเธเธฒเธฃเน€เธเธตเธขเธเนเธเนเธ”เธ เธฒเธฉเธฒ Python</p>
+
+                
+                    <div class="matching-banner">
+                        <span class="matching-score-badge">
+                            <span>๐ฏ เธ—เธฑเธเธฉเธฐเธ•เธฃเธเธเธฑเธเธเธธเธ“</span>
+                            <strong>10%</strong>
+                        </span>
+                        <div class="matching-bar-wrap">
+                            <div class="matching-bar-fill" style="width: 10%;"></div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">เธ—เธฑเธเธฉเธฐเธเธทเนเธเธเธฒเธ (&lt;50%)</span>
+                    </div>
+                
+
+                <div class="skills-list">
+                    <span class="skill-tag ">Python</span><span class="skill-tag ">Data Analysis</span><span class="skill-tag ">SQL</span><span class="skill-tag ">เธงเธดเน€เธเธฃเธฒเธฐเธซเนเธเนเธญเธกเธนเธฅ</span>
+                </div>
+            </div>
+
+            <div class="job-card-footer">
+                <span class="job-deadline">
+                    ๐“… เธเธณเธซเธเธ”เธเธดเธ”: 30 เธ.เธข. 2569
+                </span>
+                <div class="job-card-actions">
+                    <button class="btn btn-outline btn-sm" onclick="window.linkUApp.openJobDetailModal('c0000000-0000-0000-0000-000000000004')">
+                        เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”
+                    </button>
+                    
+                        <button class="btn btn-primary btn-sm" onclick="window.linkUApp.openApplyModal('c0000000-0000-0000-0000-000000000004')">
+                            เธชเธกเธฑเธเธฃเธเธฒเธ
+                        </button>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+        <div class="job-card ">
+            <div>
+                <div class="job-card-header">
+                    <span class="job-dept-badge" title="เธเธญเธเธเธฑเธ’เธเธฒเธเธฑเธเธจเธถเธเธฉเธฒ">๐ข เธเธญเธเธเธฑเธ’เธเธฒเธเธฑเธเธจเธถเธเธฉเธฒ</span>
+                    <span class="job-status-pill open">
+                        ๐ข เน€เธเธดเธ”เธฃเธฑเธเธชเธกเธฑเธเธฃ
+                    </span>
+                </div>
+
+                <h3 class="job-title">เธเนเธฒเธเธ เธฒเธเธเธดเนเธเนเธฅเธฐเธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญเธชเธฑเนเธ เธเธฑเธเธ—เธถเธเธเธดเธเธเธฃเธฃเธก Open House เนเธกเนเนเธเน</h3>
+                
+                <div class="job-instructor">
+                    <span class="inst-avatar">เธ</span>
+                    <span>เธเธนเนเธเธฃเธฐเธเธฒเธจ: <strong>เธเธญเธเธเธฑเธ’เธเธฒเธเธฑเธเธจเธถเธเธฉเธฒ เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน</strong></span>
+                </div>
+
+                <div class="job-meta-row">
+                    <span class="job-meta-item stipend">๐’ฐ 500 เธเธฒเธ—/เธงเธฑเธ + เธเธฑเนเธงเนเธกเธเธเธดเธเธเธฃเธฃเธก 18 เธเธก.</span>
+                    <span class="job-meta-item">๐‘ฅ เธฃเธฑเธ 3 เธญเธฑเธ•เธฃเธฒ</span>
+                    <span class="job-meta-item">โฑ๏ธ 3 เธชเธฑเธเธ”เธฒเธซเน</span>
+                </div>
+
+                <p class="job-description-snippet">เธฃเธฑเธเธชเธกเธฑเธเธฃเธเธฑเธเธจเธถเธเธฉเธฒเธ—เธตเนเธกเธตเธเธงเธฒเธกเธ–เธเธฑเธ”เธ”เนเธฒเธเธเธฒเธฃเธ–เนเธฒเธขเธ เธฒเธเธเธดเธเธเธฃเธฃเธก เนเธฅเธฐเธเธฒเธฃเธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญเธชเธฑเนเธ (Shorts / Reels / TikTok) เน€เธเธทเนเธญเธเธฑเธเธ—เธถเธเธเธฃเธฃเธขเธฒเธเธฒเธจเธเธฒเธเน€เธเธดเธ”เธเนเธฒเธเนเธกเนเนเธเนเนเธฅเธฐเธเธฃเธฐเธเธฒเธชเธฑเธกเธเธฑเธเธเนเธ เธฒเธเธฅเธฑเธเธฉเธ“เนเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธข</p>
+
+                
+                    <div class="matching-banner">
+                        <span class="matching-score-badge">
+                            <span>๐ฏ เธ—เธฑเธเธฉเธฐเธ•เธฃเธเธเธฑเธเธเธธเธ“</span>
+                            <strong>21%</strong>
+                        </span>
+                        <div class="matching-bar-wrap">
+                            <div class="matching-bar-fill" style="width: 21%;"></div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">เธ—เธฑเธเธฉเธฐเธเธทเนเธเธเธฒเธ (&lt;50%)</span>
+                    </div>
+                
+
+                <div class="skills-list">
+                    <span class="skill-tag matched">โ“ เธ–เนเธฒเธขเธ เธฒเธ</span><span class="skill-tag ">เธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญ</span><span class="skill-tag ">Premiere Pro</span><span class="skill-tag ">Social Media</span>
+                </div>
+            </div>
+
+            <div class="job-card-footer">
+                <span class="job-deadline">
+                    ๐“… เธเธณเธซเธเธ”เธเธดเธ”: 10 เธ.เธข. 2569
+                </span>
+                <div class="job-card-actions">
+                    <button class="btn btn-outline btn-sm" onclick="window.linkUApp.openJobDetailModal('c0000000-0000-0000-0000-000000000003')">
+                        เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”
+                    </button>
+                    
+                        <button class="btn btn-primary btn-sm" onclick="window.linkUApp.openApplyModal('c0000000-0000-0000-0000-000000000003')">
+                            เธชเธกเธฑเธเธฃเธเธฒเธ
+                        </button>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+        <div class="job-card matched-highlight">
+            <div>
+                <div class="job-card-header">
+                    <span class="job-dept-badge" title="เธชเธฒเธเธฒเธงเธดเธเธฒเธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ">๐ข เธชเธฒเธเธฒเธงเธดเธเธฒเธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ</span>
+                    <span class="job-status-pill open">
+                        ๐ข เน€เธเธดเธ”เธฃเธฑเธเธชเธกเธฑเธเธฃ
+                    </span>
+                </div>
+
+                <h3 class="job-title">เธเธนเนเธเนเธงเธขเธเธฑเธ’เธเธฒเธฃเธฐเธเธเน€เธงเนเธเนเธฅเธฐเนเธกเธเธฒเธขเนเธญเธเธเธฅเธดเน€เธเธเธฑเธ Link U (Frontend Developer)</h3>
+                
+                <div class="job-instructor">
+                    <span class="inst-avatar">เธญ</span>
+                    <span>เธเธนเนเธเธฃเธฐเธเธฒเธจ: <strong>เธญเธฒเธเธฒเธฃเธขเนเธเธดเธเธดเธ• เธชเธดเธ—เธเธดเธเธฑเธ</strong></span>
+                </div>
+
+                <div class="job-meta-row">
+                    <span class="job-meta-item stipend">๐’ฐ 6,000 เธเธฒเธ—/เนเธเธฃเธเธเธฒเธฃ</span>
+                    <span class="job-meta-item">๐‘ฅ เธฃเธฑเธ 1 เธญเธฑเธ•เธฃเธฒ</span>
+                    <span class="job-meta-item">โฑ๏ธ 2 เน€เธ”เธทเธญเธ</span>
+                </div>
+
+                <p class="job-description-snippet">เธฃเนเธงเธกเธเธฑเธ’เธเธฒเธฃเธฐเธเธเนเธเธฅเธ•เธเธญเธฃเนเธกเธเธฅเธฒเธ Link U เธชเธณเธซเธฃเธฑเธเธเธฒเธฃเธเธฑเธเธเธนเนเธเธฒเธเนเธฅเธฐเธ—เธฑเธเธฉเธฐเธเธญเธเธเธฑเธเธจเธถเธเธฉเธฒเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน เธซเธเนเธฒเธ—เธตเนเธฃเธฑเธเธเธดเธ”เธเธญเธเธเธฃเธฐเธเธญเธเธ”เนเธงเธขเธเธฒเธฃเธเธฑเธ’เธเธฒ UI เธ”เนเธงเธข HTML/CSS/JavaScript เนเธฅเธฐเน€เธเธทเนเธญเธกเธ•เนเธญ Supabase Database</p>
+
+                
+                    <div class="matching-banner">
+                        <span class="matching-score-badge">
+                            <span>๐ฏ เธ—เธฑเธเธฉเธฐเธ•เธฃเธเธเธฑเธเธเธธเธ“</span>
+                            <strong>100%</strong>
+                        </span>
+                        <div class="matching-bar-wrap">
+                            <div class="matching-bar-fill" style="width: 100%;"></div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">เธขเธญเธ”เน€เธขเธตเนเธขเธก (90%+)</span>
+                    </div>
+                
+
+                <div class="skills-list">
+                    <span class="skill-tag matched">โ“ React</span><span class="skill-tag matched">โ“ HTML/CSS</span><span class="skill-tag matched">โ“ JavaScript</span><span class="skill-tag matched">โ“ Figma</span>
+                </div>
+            </div>
+
+            <div class="job-card-footer">
+                <span class="job-deadline">
+                    ๐“… เธเธณเธซเธเธ”เธเธดเธ”: 20 เธ.เธข. 2569
+                </span>
+                <div class="job-card-actions">
+                    <button class="btn btn-outline btn-sm" onclick="window.linkUApp.openJobDetailModal('c0000000-0000-0000-0000-000000000002')">
+                        เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”
+                    </button>
+                    
+                        <button class="btn btn-primary btn-sm" onclick="window.linkUApp.openApplyModal('c0000000-0000-0000-0000-000000000002')">
+                            เธชเธกเธฑเธเธฃเธเธฒเธ
+                        </button>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+        <div class="job-card ">
+            <div>
+                <div class="job-card-header">
+                    <span class="job-dept-badge" title="เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ">๐ข เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ</span>
+                    <span class="job-status-pill open">
+                        ๐ข เน€เธเธดเธ”เธฃเธฑเธเธชเธกเธฑเธเธฃ
+                    </span>
+                </div>
+
+                <h3 class="job-title">เธเธนเนเธเนเธงเธขเธญเธญเธเนเธเธเธชเธทเนเธญเธ”เธดเธเธดเธ—เธฑเธฅเนเธฅเธฐ Infographic เธเธฃเธฐเธเธณเธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ</h3>
+                
+                <div class="job-instructor">
+                    <span class="inst-avatar">เธญ</span>
+                    <span>เธเธนเนเธเธฃเธฐเธเธฒเธจ: <strong>เธญเธฒเธเธฒเธฃเธขเนเธเธดเธเธดเธ• เธชเธดเธ—เธเธดเธเธฑเธ</strong></span>
+                </div>
+
+                <div class="job-meta-row">
+                    <span class="job-meta-item stipend">๐’ฐ 350 เธเธฒเธ—/เธงเธฑเธ</span>
+                    <span class="job-meta-item">๐‘ฅ เธฃเธฑเธ 2 เธญเธฑเธ•เธฃเธฒ</span>
+                    <span class="job-meta-item">โฑ๏ธ 1 เน€เธ”เธทเธญเธ (เธ.เธข. 2568)</span>
+                </div>
+
+                <p class="job-description-snippet">เธ•เนเธญเธเธเธฒเธฃเธเธฑเธเธจเธถเธเธฉเธฒเธเนเธงเธขเธเธฑเธ”เธ—เธณเธชเธทเนเธญเธเธฃเธฐเธเธฒเธชเธฑเธกเธเธฑเธเธเนเธซเธฅเธฑเธเธชเธนเธ•เธฃ เนเธเธชเน€เธ•เธญเธฃเนเธเธดเธเธเธฃเธฃเธก เนเธฅเธฐเธ เธฒเธเธเธฃเธฒเธเธดเธเธญเธดเธเนเธเธเธฃเธฒเธเธดเธเธชเธณเธซเธฃเธฑเธเน€เธเธขเนเธเธฃเนเธเธ Facebook Page เนเธฅเธฐเน€เธงเนเธเนเธเธ•เนเธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ เธชเธฒเธกเธฒเธฃเธ–เนเธเน Canva เธซเธฃเธทเธญ Figma เนเธ”เนเน€เธเนเธเธญเธขเนเธฒเธเธ”เธต</p>
+
+                
+                    <div class="matching-banner">
+                        <span class="matching-score-badge">
+                            <span>๐ฏ เธ—เธฑเธเธฉเธฐเธ•เธฃเธเธเธฑเธเธเธธเธ“</span>
+                            <strong>74%</strong>
+                        </span>
+                        <div class="matching-bar-wrap">
+                            <div class="matching-bar-fill" style="width: 74%;"></div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--text-secondary);">เน€เธซเธกเธฒเธฐเธชเธกเธเธฒเธเธเธฅเธฒเธ (50-74%)</span>
+                    </div>
+                
+
+                <div class="skills-list">
+                    <span class="skill-tag matched">โ“ Canva</span><span class="skill-tag matched">โ“ Graphic Design</span><span class="skill-tag matched">โ“ Figma</span><span class="skill-tag ">เธชเธทเนเธญเธชเธฒเธฃเธญเธเธเนเธเธฃ</span>
+                </div>
+            </div>
+
+            <div class="job-card-footer">
+                <span class="job-deadline">
+                    ๐“… เธเธณเธซเธเธ”เธเธดเธ”: 15 เธ.เธข. 2569
+                </span>
+                <div class="job-card-actions">
+                    <button class="btn btn-outline btn-sm" onclick="window.linkUApp.openJobDetailModal('c0000000-0000-0000-0000-000000000001')">
+                        เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”
+                    </button>
+                    
+                        <button class="btn btn-primary btn-sm" onclick="window.linkUApp.openApplyModal('c0000000-0000-0000-0000-000000000001')">
+                            เธชเธกเธฑเธเธฃเธเธฒเธ
+                        </button>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+            </div>
+        
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <img src="assets/logo.png" alt="Maejo University Emblem" style="width:32px; height:32px;">
+                <div>
+                    <strong>Link U Application</strong> โ€ข เนเธเธฃเธเธเธฒเธเธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน
+                    <div style="font-size:0.75rem; color:var(--text-muted);">
+                        เธเธนเนเธเธฑเธ’เธเธฒ: เธ.เธช.เธเธงเธฑเธฅเธฃเธฑเธเธ•เน เธงเธเธฉเนเธเธณ, เธ.เธช.เธ“เธดเธเธฒเธเธฃ เธญเธณเธ เธฒ, เธเธฒเธขเธ•เนเธญเธ•เธฃเธฐเธเธนเธฅ เธ”เธงเธเธชเธฒเธฃ, เธ.เธช.เธ—เธฃเธฃเธจเธเนเธกเธ เธฅเธญเธงเธดเธฅเธฒเธฃ | เธญเธฒเธเธฒเธฃเธขเนเธ—เธตเนเธเธฃเธถเธเธฉเธฒ: เธญ.เธเธดเธเธดเธ• เธชเธดเธ—เธเธดเธเธฑเธ
+                    </div>
+                </div>
+            </div>
+            <div class="footer-links">
+                <a href="javascript:void(0)" onclick="window.linkUApp.openModal('supabaseConfigModal')">โ๏ธ เธ•เธฑเนเธเธเนเธฒเธเธฒเธเธเนเธญเธกเธนเธฅ Supabase</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================================================================= -->
+    <!-- MODALS                                                            -->
+    <!-- ================================================================= -->
+
+    <!-- 1. Post / Edit Job Modal (Instructor Only) -->
+    <div class="modal-overlay" id="jobEditorModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title" id="jobEditorModalTitle">โ• เธเธฃเธฐเธเธฒเธจเธเธฒเธ / เนเธเธฃเธเธเธฒเธฃเนเธซเธกเน</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('jobEditorModal')">ร—</button>
+            </div>
+            <form id="jobEditorForm">
+                <input type="hidden" id="jobEditId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">เธเธทเนเธญเธเธฒเธ / เธเธทเนเธญเนเธเธฃเธเธเธฒเธฃ <span class="required">*</span></label>
+                        <input type="text" id="jobTitleInput" class="form-input" placeholder="เน€เธเนเธ เธเธนเนเธเนเธงเธขเธเธฑเธ”เธ—เธณเธชเธทเนเธญเธกเธตเน€เธ”เธตเธขเนเธฅเธฐเธญเธดเธเนเธเธเธฃเธฒเธเธดเธ เธเธฃเธฐเธเธณเธเธ“เธฐ" required="">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธเธ“เธฐ / เธซเธเนเธงเธขเธเธฒเธ <span class="required">*</span></label>
+                            <input type="text" id="jobDeptInput" class="form-input" placeholder="เน€เธเนเธ เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ" required="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธเธณเธเธงเธเธ—เธตเนเธฃเธฑเธ (เธเธ) <span class="required">*</span></label>
+                            <input type="number" id="jobPositionsInput" class="form-input" value="1" min="1" required="">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เนเธฅเธฐเธซเธเนเธฒเธ—เธตเนเธเธงเธฒเธกเธฃเธฑเธเธเธดเธ”เธเธญเธ <span class="required">*</span></label>
+                        <textarea id="jobDescInput" class="form-textarea" rows="4" placeholder="เธฃเธฐเธเธธเธงเธฑเธ•เธ–เธธเธเธฃเธฐเธชเธเธเน เธเธญเธเน€เธเธ•เธเธฒเธ เนเธฅเธฐเธชเธดเนเธเธ—เธตเนเธเธฑเธเธจเธถเธเธฉเธฒเธเธฐเนเธ”เนเธฃเธฑเธเธเธฒเธเธเธฒเธฃเธ—เธณเธเธฒเธเธเธตเน..." required=""></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธ—เธฑเธเธฉเธฐเธ—เธตเนเธ•เนเธญเธเธเธฒเธฃ (Required Skills) <span class="required">*</span></label>
+                        <input type="text" id="jobSkillsInput" class="form-input" placeholder="เธเธฑเนเธเธ”เนเธงเธขเน€เธเธฃเธทเนเธญเธเธซเธกเธฒเธขเธเธธเธฅเธ เธฒเธ เน€เธเนเธ Canva, Graphic Design, เธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญ" required="">
+                        <div class="form-help">เธฃเธฐเธเธ AI Matching เธเธฐเธเธณเธ—เธฑเธเธฉเธฐเน€เธซเธฅเนเธฒเธเธตเนเนเธเธงเธดเน€เธเธฃเธฒเธฐเธซเนเธเธฑเธเธเธนเนเธเธฑเธเธ—เธฑเธเธฉเธฐเธเธญเธเธเธฑเธเธจเธถเธเธฉเธฒ</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธเนเธฒเธ•เธญเธเนเธ—เธ / เน€เธเธตเนเธขเน€เธฅเธตเนเธขเธ</label>
+                            <input type="text" id="jobStipendInput" class="form-input" placeholder="เน€เธเนเธ 350 เธเธฒเธ—/เธงเธฑเธ เธซเธฃเธทเธญ เธเธฑเนเธงเนเธกเธเธเธดเธเธเธฃเธฃเธก 12 เธเธก.">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธฃเธฐเธขเธฐเน€เธงเธฅเธฒเธ”เธณเน€เธเธดเธเธเธฒเธ</label>
+                            <input type="text" id="jobDurationInput" class="form-input" placeholder="เน€เธเนเธ 1 เน€เธ”เธทเธญเธ, 2 เธชเธฑเธเธ”เธฒเธซเน">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธงเธฑเธเธเธดเธ”เธฃเธฑเธเธชเธกเธฑเธเธฃ</label>
+                            <input type="date" id="jobDeadlineInput" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธชเธ–เธฒเธเธ—เธตเนเธ—เธณเธเธฒเธ</label>
+                            <input type="text" id="jobLocationInput" class="form-input" value="เธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('jobEditorModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธเธฑเธเธ—เธถเธเนเธฅเธฐเน€เธเธขเนเธเธฃเนเธฅเธ Supabase</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Job Detail Modal -->
+    <div class="modal-overlay" id="jobDetailModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">๐“ เธฃเธฒเธขเธฅเธฐเน€เธญเธตเธขเธ”เธเธฃเธฐเธเธฒเธจเธเธฒเธ</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('jobDetailModal')">ร—</button>
+            </div>
+            <div class="modal-body" id="jobDetailModalBody">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('jobDetailModal')">เธเธดเธ”</button>
+                <button type="button" class="btn btn-primary" id="jobDetailApplyBtn">
+                    <span>เธชเธกเธฑเธเธฃเธเธฒเธเธเธตเน ๐€</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Job Apply Modal (Student) -->
+    <div class="modal-overlay" id="applyModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">๐“ เธชเธกเธฑเธเธฃเน€เธเนเธฒเธฃเนเธงเธกเธเธฒเธ / เนเธเธฃเธเธเธฒเธฃ</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('applyModal')">ร—</button>
+            </div>
+            <form id="applyForm">
+                <input type="hidden" id="applyJobId">
+                <div class="modal-body">
+                    <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-md); margin-bottom:18px;">
+                        <div style="font-size:0.8rem; color:var(--text-muted);">เธ•เธณเนเธซเธเนเธเธ—เธตเนเธชเธกเธฑเธเธฃ:</div>
+                        <div style="font-weight:700; font-size:1.1rem; color:var(--text-primary);" id="applyJobTitleDisplay">-</div>
+                        <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:2px;" id="applyDeptDisplay">-</div>
+                        <div style="margin-top:8px; font-size:0.85rem;">
+                            ๐ฏ เธเธงเธฒเธกเน€เธซเธกเธฒเธฐเธชเธกเธ•เธฒเธกเธ—เธฑเธเธฉเธฐ (AI Match): <strong style="color:var(--primary);" id="applyMatchScoreDisplay">-</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธเนเธญเธเธงเธฒเธกเนเธเธฐเธเธณเธ•เธฑเธง / เน€เธซเธ•เธธเธเธฅเธ—เธตเนเธชเธเนเธเธเธฒเธเธเธตเน <span class="required">*</span></label>
+                        <textarea id="applyMessageInput" class="form-textarea" rows="4" placeholder="เนเธเธฐเธเธณเธ•เธฑเธงเธชเธฑเนเธเน เธเธฃเธฐเธชเธเธเธฒเธฃเธ“เน เนเธฅเธฐเน€เธซเธ•เธธเธเธฅเธ—เธตเนเธเธธเธ“เน€เธซเธกเธฒเธฐเธเธฑเธเธ•เธณเนเธซเธเนเธเธเธตเน..." required=""></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธฅเธดเธเธเน Portfolio / เธเธฅเธเธฒเธเน€เธเธดเนเธกเน€เธ•เธดเธก (เธ–เนเธฒเธกเธต)</label>
+                        <input type="url" id="applyPortfolioInput" class="form-input" placeholder="https://drive.google.com/... เธซเธฃเธทเธญ https://figma.com/...">
+                        <div class="form-help">เธเธธเธ“เธชเธฒเธกเธฒเธฃเธ–เนเธเธเธฅเธดเธเธเน Google Drive, Canva, Github เธซเธฃเธทเธญ Figma เนเธ”เน</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('applyModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธขเธทเธเธขเธฑเธเธเธฒเธฃเธชเธกเธฑเธเธฃเธเธฒเธ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Edit Profile Modal -->
+    <div class="modal-overlay" id="profileEditModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">โ๏ธ เนเธเนเนเธเธเนเธญเธกเธนเธฅเนเธเธฃเนเธเธฅเน</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('profileEditModal')">ร—</button>
+            </div>
+            <form id="profileEditForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">เธเธทเนเธญ - เธชเธเธธเธฅ <span class="required">*</span></label>
+                        <input type="text" id="profileNameInput" class="form-input" required="">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธเธ“เธฐ</label>
+                            <input type="text" id="profileFacultyInput" class="form-input" placeholder="เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธชเธฒเธเธฒเธงเธดเธเธฒ / เธซเธเนเธงเธขเธเธฒเธ</label>
+                            <input type="text" id="profileDeptInput" class="form-input" placeholder="เธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธเธฑเนเธเธเธต เธซเธฃเธทเธญ เธ•เธณเนเธซเธเนเธ</label>
+                            <input type="text" id="profileYearInput" class="form-input" placeholder="เธเธฑเธเธจเธถเธเธฉเธฒเธเธต 3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เน€เธเธญเธฃเนเนเธ—เธฃเธจเธฑเธเธ—เน</label>
+                            <input type="text" id="profilePhoneInput" class="form-input" placeholder="08x-xxx-xxxx">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธฅเธดเธเธเนเธฃเธนเธเนเธเธฃเนเธเธฅเน (URL)</label>
+                        <input type="url" id="profileAvatarInput" class="form-input" placeholder="https://images.unsplash.com/...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธ—เธฑเธเธฉเธฐเนเธฅเธฐเธเธงเธฒเธกเธชเธฒเธกเธฒเธฃเธ– (เธเธฑเนเธเธ”เนเธงเธขเธเธธเธฅเธ เธฒเธ) <span class="required">*</span></label>
+                        <input type="text" id="profileSkillsInput" class="form-input" placeholder="Canva, Graphic Design, เธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญ, React, Python">
+                        <div class="form-help">เธ—เธฑเธเธฉเธฐเธเธตเนเธเธฐเธ–เธนเธเนเธเนเธเธณเธเธงเธ“เธเธฐเนเธเธเนเธเธฃเธฐเธเธ AI Matching เธเธฑเธเธเธฃเธฐเธเธฒเธจเธเธฒเธ</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธเธงเธฒเธกเธชเธเนเธเธเธดเน€เธจเธฉ</label>
+                        <input type="text" id="profileInterestsInput" class="form-input" placeholder="UX/UI Design, เธเธฒเธฃเธเธฅเธดเธ•เธชเธทเนเธญ, Data Analytics">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เนเธเธฐเธเธณเธ•เธฑเธงเธชเธฑเนเธเน (Bio)</label>
+                        <textarea id="profileBioInput" class="form-textarea" rows="3" placeholder="เธเธญเธเน€เธฅเนเธฒเน€เธเธตเนเธขเธงเธเธฑเธเธ•เธฑเธงเธเธธเธ“เนเธฅเธฐเน€เธเนเธฒเธซเธกเธฒเธขเนเธเธเธฒเธฃเธ—เธณเธเธฒเธ..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('profileEditModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธเธฑเธเธ—เธถเธเธเนเธญเธกเธนเธฅ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. Add Portfolio Item Modal -->
+    <div class="modal-overlay" id="portfolioAddModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">โ• เน€เธเธดเนเธกเธเธฅเธเธฒเธเนเธ Portfolio</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('portfolioAddModal')">ร—</button>
+            </div>
+            <form id="portfolioAddForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">เธเธทเนเธญเธเธฅเธเธฒเธ / เธเธทเนเธญเธเธฒเธเธงเธดเธเธฑเธข / เนเธเธฃเน€เธเธเธ•เน <span class="required">*</span></label>
+                        <input type="text" id="portfolioTitleInput" class="form-input" placeholder="เน€เธเนเธ เธญเธญเธเนเธเธเนเธเธชเน€เธ•เธญเธฃเนเธเธฃเธฐเธเธฒเธชเธฑเธกเธเธฑเธเธเนเธเธฒเธเธชเธฑเธเธ”เธฒเธซเนเน€เธเธฉเธ•เธฃเนเธกเนเนเธเน" required="">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธซเธกเธงเธ”เธซเธกเธนเนเธเธฅเธเธฒเธ <span class="required">*</span></label>
+                        <select id="portfolioCategoryInput" class="form-select" required="">
+                            <option value="Graphic &amp; Design">Graphic &amp; Design (เธเธฃเธฒเธเธดเธ/เธชเธทเนเธญ)</option>
+                            <option value="Video &amp; Media">Video &amp; Media (เธงเธดเธ”เธตเนเธญ/เธกเธตเน€เธ”เธตเธข)</option>
+                            <option value="Web &amp; Application">Web &amp; Application (เน€เธงเนเธ/เนเธญเธเธเธฅเธดเน€เธเธเธฑเธ)</option>
+                            <option value="Research &amp; Academic">Research &amp; Academic (เธงเธดเธเธฑเธข/เธงเธดเธเธฒเธเธฒเธฃ)</option>
+                            <option value="Activity &amp; Event">Activity &amp; Event (เธเธดเธเธเธฃเธฃเธก/เธญเธตเน€เธงเธเธ•เน)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธเธณเธญเธเธดเธเธฒเธขเธเธฅเธเธฒเธเนเธฅเธฐเธเธ—เธเธฒเธ—เธซเธเนเธฒเธ—เธตเน</label>
+                        <textarea id="portfolioDescInput" class="form-textarea" rows="3" placeholder="เธญเธเธดเธเธฒเธขเธซเธเนเธฒเธ—เธตเนเธเธงเธฒเธกเธฃเธฑเธเธเธดเธ”เธเธญเธ เนเธฅเธฐเน€เธเธฃเธทเนเธญเธเธกเธทเธญเธ—เธตเนเนเธเน..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธฅเธดเธเธเนเธ เธฒเธเธ•เธฑเธงเธญเธขเนเธฒเธเธเธฅเธเธฒเธ (Image URL)</label>
+                        <input type="url" id="portfolioImgInput" class="form-input" placeholder="https://images.unsplash.com/... เธซเธฃเธทเธญ เธฅเธดเธเธเนเธฃเธนเธเธ เธฒเธเธเธญเธเธเธธเธ“">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธฅเธดเธเธเนเธเธฅเธเธฒเธเธเธเธฑเธเน€เธ•เนเธก (Project URL)</label>
+                        <input type="url" id="portfolioUrlInput" class="form-input" placeholder="https://drive.google.com/... เธซเธฃเธทเธญ https://github.com/...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('portfolioAddModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธเธฑเธเธ—เธถเธเธเธฅเธเธฒเธเธฅเธ Portfolio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. Review & Rating Modal (Instructor) -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">โญ เนเธซเนเธเธฐเนเธเธเนเธฅเธฐเธเธฃเธฐเน€เธกเธดเธเธเธฅเธเธฒเธเธเธฑเธเธจเธถเธเธฉเธฒ</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('reviewModal')">ร—</button>
+            </div>
+            <form id="reviewForm">
+                <input type="hidden" id="reviewAppId">
+                <input type="hidden" id="reviewStudentId">
+                <input type="hidden" id="reviewJobId">
+                <input type="hidden" id="reviewJobTitle">
+                <input type="hidden" id="reviewRatingInput" value="5">
+
+                <div class="modal-body">
+                    <div style="background:var(--bg-subtle); padding:12px; border-radius:var(--radius-sm); margin-bottom:16px;">
+                        เธเธฃเธฐเน€เธกเธดเธเธเธฅเธเธฒเธเธเธญเธ: <strong id="reviewStudentNameDisplay">-</strong>
+                    </div>
+
+                    <div class="form-group" style="text-align:center;">
+                        <label class="form-label">เธฃเธฐเธ”เธฑเธเธเธฐเนเธเธเธเธงเธฒเธกเธเธถเธเธเธญเนเธ:</label>
+                        <div class="star-rating" id="starRatingGroup">
+                            <span class="star filled" data-value="1">โ…</span>
+                            <span class="star filled" data-value="2">โ…</span>
+                            <span class="star filled" data-value="3">โ…</span>
+                            <span class="star filled" data-value="4">โ…</span>
+                            <span class="star filled" data-value="5">โ…</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เธเธงเธฒเธกเธเธดเธ”เน€เธซเนเธ / เธเนเธญเน€เธชเธเธญเนเธเธฐเน€เธเธทเนเธญเธเธฒเธฃเธเธฑเธ’เธเธฒ <span class="required">*</span></label>
+                        <textarea id="reviewCommentInput" class="form-textarea" rows="4" placeholder="เธฃเธฐเธเธธเธเธธเธ”เน€เธ”เนเธ เธเธงเธฒเธกเธฃเธฑเธเธเธดเธ”เธเธญเธเนเธเธเธฒเธฃเธ—เธณเธเธฒเธ เนเธฅเธฐเธเธณเธเธกเน€เธเธข เน€เธเธทเนเธญเธเธฑเธเธ—เธถเธเน€เธเนเธเธเธฃเธฐเธงเธฑเธ•เธดเธเธฅเธเธฒเธเธเธญเธเธเธฑเธเธจเธถเธเธฉเธฒ..." required=""></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('reviewModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธเธฑเธเธ—เธถเธเธเธฐเนเธเธเนเธฅเธฐเธฃเธตเธงเธดเธง</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 7. Supabase Database Configuration Modal -->
+    <div class="modal-overlay" id="supabaseConfigModal">
+        <div class="modal-container" style="max-width: 680px;">
+            <div class="modal-header">
+                <h3 class="modal-title">โ๏ธ เธ•เธฑเนเธเธเนเธฒเน€เธเธทเนเธญเธกเธ•เนเธญเธเธฒเธเธเนเธญเธกเธนเธฅ Supabase</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('supabaseConfigModal')">ร—</button>
+            </div>
+            <form id="supabaseConfigForm">
+                <div class="modal-body">
+                    <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:16px;">
+                        เธเธฃเธญเธ <strong>Project URL</strong> เนเธฅเธฐ <strong>Anon Key</strong> เธเธฒเธ Supabase Dashboard เน€เธเธทเนเธญเน€เธเธทเนเธญเธกเธ•เนเธญเนเธฅเธฐเน€เธเนเธเธเนเธญเธกเธนเธฅเธเธฃเธดเธ
+                    </p>
+
+                    <div class="form-group">
+                        <label class="form-label">Supabase Project URL</label>
+                        <input type="url" id="supabaseUrlInput" class="form-input" placeholder="https://your-project-id.supabase.co">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Supabase Anon Key (Public Key)</label>
+                        <input type="text" id="supabaseKeyInput" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                    </div>
+
+                    <div style="background:var(--primary-50); border:1px solid var(--primary-100); padding:14px; border-radius:var(--radius-md); margin-top:16px;">
+                        <h4 style="font-size:0.9rem; font-weight:700; color:var(--primary-dark); margin-bottom:6px;">
+                            ๐“ SQL Schema เธชเธณเธซเธฃเธฑเธเธฃเธฑเธเธเธ Supabase
+                        </h4>
+                        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">
+                            เนเธเธฅเน <code>schema.sql</code> เธ–เธนเธเธชเธฃเนเธฒเธเนเธงเนเนเธเนเธเธฃเน€เธเธเธ•เนเนเธฅเนเธง เธชเธฒเธกเธฒเธฃเธ–เธเธณเนเธเธฃเธฑเธเนเธ Supabase SQL Editor เนเธ”เนเธ—เธฑเธเธ—เธต
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('supabaseConfigModal')">เธเธดเธ”</button>
+                    <button type="submit" class="btn btn-primary">เธเธฑเธเธ—เธถเธเนเธฅเธฐเน€เธเธทเนเธญเธกเธ•เนเธญ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 8. Authentication (Login / Register) Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-container" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="authModalTitle">๐”‘ เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธ / เธชเธกเธฑเธเธฃเธชเธกเธฒเธเธดเธ</h3>
+                <button class="modal-close-btn" onclick="window.linkUApp.closeModal('authModal')">ร—</button>
+            </div>
+            <div style="display:flex; border-bottom:1px solid var(--border-color); background:var(--bg-subtle);">
+                <button type="button" id="tabAuthLogin" class="btn" style="flex:1; border-radius:0; border:none; background:transparent; font-weight:700; color:var(--primary); border-bottom:2px solid var(--primary);" onclick="window.linkUApp.switchAuthTab('login')">
+                    เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธ
+                </button>
+                <button type="button" id="tabAuthRegister" class="btn" style="flex:1; border-radius:0; border:none; background:transparent; color:var(--text-secondary);" onclick="window.linkUApp.switchAuthTab('register')">
+                    เธชเธกเธฑเธเธฃเธชเธกเธฒเธเธดเธเนเธซเธกเน
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="window.linkUApp.handleLogin(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">เธญเธตเน€เธกเธฅเธกเธซเธฒเธงเธดเธ—เธขเธฒเธฅเธฑเธขเนเธกเนเนเธเน (@mju.ac.th)</label>
+                        <input type="email" id="loginEmailInput" class="form-input" placeholder="example@mju.ac.th" required="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">เธฃเธซเธฑเธชเธเนเธฒเธ</label>
+                        <input type="password" id="loginPasswordInput" class="form-input" placeholder="โ€ขโ€ขโ€ขโ€ขโ€ขโ€ขโ€ขโ€ข" required="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('authModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เน€เธเนเธฒเธชเธนเนเธฃเธฐเธเธ</button>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" style="display:none;" onsubmit="window.linkUApp.handleRegister(event)">
+                <div class="modal-body">
+                    <!-- Role Selection Cards -->
+                    <label class="form-label">เน€เธฅเธทเธญเธเธเธฃเธฐเน€เธ เธ—เธเธนเนเนเธเนเธเธฒเธ <span class="required">*</span></label>
+                    <div class="role-cards-group">
+                        <div class="role-card-option selected" id="roleCardStudent" onclick="window.linkUApp.selectRegisterRole('student')">
+                            <div class="role-icon">๐‘จโ€๐“</div>
+                            <div class="role-name">เธเธฑเธเธจเธถเธเธฉเธฒ</div>
+                            <div class="role-desc">เธเนเธเธซเธฒเนเธฅเธฐเธชเธกเธฑเธเธฃเธเธฒเธ เธชเธฐเธชเธก Portfolio</div>
+                        </div>
+                        <div class="role-card-option" id="roleCardInstructor" onclick="window.linkUApp.selectRegisterRole('instructor')">
+                            <div class="role-icon">๐‘จโ€๐ซ</div>
+                            <div class="role-name">เธญเธฒเธเธฒเธฃเธขเน / เธเธธเธเธฅเธฒเธเธฃ</div>
+                            <div class="role-desc">เธเธฃเธฐเธเธฒเธจเธฃเธฑเธเธชเธกเธฑเธเธฃเธเธฒเธ เธเธฑเธ”เน€เธฅเธทเธญเธเนเธฅเธฐเธเธฃเธฐเน€เธกเธดเธ</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="registerRoleInput" value="student">
+
+                    <div class="form-group">
+                        <label class="form-label">เธเธทเนเธญ - เธเธฒเธกเธชเธเธธเธฅ <span class="required">*</span></label>
+                        <input type="text" id="registerNameInput" class="form-input" placeholder="เน€เธเนเธ เธเธฒเธขเธ•เนเธญเธ•เธฃเธฐเธเธนเธฅ เธ”เธงเธเธชเธฒเธฃ" required="">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธญเธตเน€เธกเธฅ <span class="required">*</span></label>
+                            <input type="email" id="registerEmailInput" class="form-input" placeholder="student@mju.ac.th" required="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธฃเธซเธฑเธชเธเนเธฒเธ <span class="required">*</span></label>
+                            <input type="password" id="registerPasswordInput" class="form-input" placeholder="โ€ขโ€ขโ€ขโ€ขโ€ขโ€ขโ€ขโ€ข" required="">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">เธเธ“เธฐ <span class="required">*</span></label>
+                            <input type="text" id="registerFacultyInput" class="form-input" placeholder="เน€เธเนเธ เธเธ“เธฐเธเธฃเธดเธซเธฒเธฃเธเธธเธฃเธเธดเธ" required="">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เธชเธฒเธเธฒเธงเธดเธเธฒ / เธซเธเนเธงเธขเธเธฒเธ</label>
+                            <input type="text" id="registerDeptInput" class="form-input" placeholder="เน€เธเนเธ เธเธงเธฑเธ•เธเธฃเธฃเธกเธเธธเธฃเธเธดเธเธ”เธดเธเธดเธ—เธฑเธฅ">
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="registerSkillsGroup">
+                        <label class="form-label">เธ—เธฑเธเธฉเธฐเธเธงเธฒเธกเธชเธฒเธกเธฒเธฃเธ–เธเธญเธเธเธธเธ“ (เธเธฑเนเธเธ”เนเธงเธขเธเธธเธฅเธ เธฒเธ)</label>
+                        <input type="text" id="registerSkillsInput" class="form-input" placeholder="เน€เธเนเธ Canva, Graphic Design, เธ•เธฑเธ”เธ•เนเธญเธงเธดเธ”เธตเนเธญ, React">
+                        <div class="form-help">เนเธเนเธชเธณเธซเธฃเธฑเธเธฃเธฐเธเธ AI Matching เธเธฑเธเธเธนเนเธเธฒเธเธ—เธตเนเน€เธซเธกเธฒเธฐเธชเธกเนเธ”เธขเธญเธฑเธ•เนเธเธกเธฑเธ•เธด</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="window.linkUApp.closeModal('authModal')">เธขเธเน€เธฅเธดเธ</button>
+                    <button type="submit" class="btn btn-primary">เธชเธฃเนเธฒเธเธเธฑเธเธเธตเธเธนเนเนเธเนเนเธซเธกเน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Main ES Module Script -->
+    <script type="module" src="js/app.js"></script>
+
+
+</body></html>
